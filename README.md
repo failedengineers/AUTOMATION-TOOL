@@ -2,6 +2,11 @@ AUTOMATION-TOOL
 A lightweight automation tool that extracts recruiter emails and LinkedIn links from raw hiring data, helping streamline job outreach and networking workflows.
 A simple Python-based utility that scans Excel files to automatically extract recruiter emails and LinkedIn profile links for faster job outreach and networking.
 
+IF you like this repo please make sure you hit the star and share it with others.
+if you face any dificulty send a email or a message at linkdeln gulatikalash05@gmail.com or https://www.linkedin.com/in/kalash-gulati-789815321/ or insta also thesanskariigulati
+
+DOWNLOAD THIS  repo by doing:
+git clone https://github.com/failedengineers/AUTOMATION-TOOL
 
 dependecies:# install these dependencies first
 pip install pandas openpyxl
