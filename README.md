@@ -31,7 +31,7 @@ python extractor.py  (Generate clean CSV files OF EMAILS AND ALSO LINKEDIN URL)
 
 Step 3 — Prepare Resume
 
-Place your resume PDF inside the project folder.
+Place your resume PDF inside the project folder. 
 Step 4 — Enable Gmail App Password
 Go to:
 Google App Passwords
@@ -39,11 +39,10 @@ Enable 2-Factor Authentication
 Generate an App Password
 Copy the generated password
 
-Update your email sender script:
+Update your email sender  and resume name and the file name in the script:
 
 SENDER_EMAIL = "your_email@gmail.com"
 GMAIL_APP_PASSWORD = "your_generated_password"  # DONT LEAVE SPACES WHILE ENTERING THE PASSWD HERE
-
 
 Step 5 — Send Automated Outreach Emails
 
