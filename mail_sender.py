@@ -1,0 +1,254 @@
+import smtplib
+import pandas as pd
+import time
+import random
+
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.application import MIMEApplication
+
+
+# =========================================================
+# CONFIGURATION
+# =========================================================
+
+SENDER_EMAIL = "hridikgulati04@gmail.com"
+GMAIL_APP_PASSWORD = "bvnckjipfpodqqqo"
+
+LEADS_CSV = "hridik_emails.csv"
+RESUME_FILE = "Hridik_Gulati_Resume_One_Page_Updated.pdf"
+
+DAILY_SEND_LIMIT = 120
+
+MIN_WAIT_TIME = 90
+MAX_WAIT_TIME = 180
+
+SMTP_HOST = "smtp.gmail.com"
+SMTP_PORT = 587
+
+
+# =========================================================
+# SUBJECT OPTIONS
+# =========================================================
+
+email_subjects = [
+    "Application for SDE Role",
+    "Interested in Software Development Opportunity",
+    "Application for Software Engineer Position",
+    "Regarding Your Hiring Post",
+    "SDE Opportunity — Resume Attached"
+]
+
+
+# =========================================================
+# EMAIL TEMPLATES
+# =========================================================
+
+email_templates = [
+
+"""
+Hi,
+
+I recently came across your hiring post for a Software Development role and wanted to reach out.
+
+I have 3+ years of experience working with Python, Django, React.js, Flutter, and AWS, with hands-on exposure to backend systems and scalable applications.
+
+I've attached my resume for your consideration and would love the opportunity to discuss the role further.
+
+Thanks,
+Hridik Gulati
+""",
+
+"""
+Hello,
+
+I saw your opening for an SDE position and would like to apply.
+
+My background includes over 3 years of experience in Python/Django development, React.js, Flutter, AWS, and building production-ready applications.
+
+Please find my resume attached. Looking forward to hearing from you.
+
+Best regards,
+Hridik Gulati
+""",
+
+"""
+Hi,
+
+Hope you're doing well.
+
+I’m reaching out regarding the Software Development opportunity you posted. My experience includes Python, Django, React.js, Flutter, AWS, and scalable backend development.
+
+I've attached my resume for reference and would appreciate the chance to connect.
+
+Thank you,
+Hridik Gulati
+""",
+
+"""
+Hello,
+
+I came across your recent hiring post and wanted to express my interest in the role.
+
+I have experience working across backend and full-stack development using Python, Django, React.js, Flutter, and AWS.
+
+Sharing my resume here for your review. I’d be happy to discuss further if my profile aligns with your requirements.
+
+Regards,
+Hridik Gulati
+"""
+]
+
+
+# =========================================================
+# LOAD EMAIL LIST
+# =========================================================
+
+contacts_df = pd.read_csv(LEADS_CSV)
+
+emails_sent_today = 0
+
+
+# =========================================================
+# CREATE SMTP SESSION
+# =========================================================
+
+def connect_to_gmail():
+
+    smtp = smtplib.SMTP(
+        SMTP_HOST,
+        SMTP_PORT,
+        timeout=60
+    )
+
+    smtp.ehlo()
+    smtp.starttls()
+    smtp.ehlo()
+
+    smtp.login(
+        SENDER_EMAIL,
+        GMAIL_APP_PASSWORD
+    )
+
+    return smtp
+
+
+# =========================================================
+# START SENDING
+# =========================================================
+
+for row_index, row_data in contacts_df.copy().iterrows():
+
+    if emails_sent_today >= DAILY_SEND_LIMIT:
+        print("\nDaily sending limit reached.")
+        break
+
+    recipient_email = str(row_data["email"]).strip()
+
+    if not recipient_email or "@" not in recipient_email:
+        print(f"Skipping invalid email -> {recipient_email}")
+        continue
+
+    print(f"\nSending email to: {recipient_email}")
+
+    smtp_server = None
+
+    try:
+
+        # Create fresh SMTP connection
+        smtp_server = connect_to_gmail()
+
+        # Create email object
+        email_message = MIMEMultipart()
+
+        email_message["From"] = SENDER_EMAIL
+        email_message["To"] = recipient_email
+        email_message["Subject"] = random.choice(email_subjects)
+
+        # Pick random template
+        selected_template = random.choice(email_templates)
+
+        email_message.attach(
+            MIMEText(selected_template, "plain")
+        )
+
+        # Attach resume
+        with open(RESUME_FILE, "rb") as resume_file:
+
+            resume_attachment = MIMEApplication(
+                resume_file.read(),
+                Name="Hridik_Gulati_Resume.pdf"
+            )
+
+        resume_attachment["Content-Disposition"] = (
+            'attachment; filename="Hridik_Gulati_Resume.pdf"'
+        )
+
+        email_message.attach(resume_attachment)
+
+        # Send email
+        smtp_server.sendmail(
+            SENDER_EMAIL,
+            recipient_email,
+            email_message.as_string()
+        )
+
+        print(f"Email sent successfully -> {recipient_email}")
+
+        # Remove successfully sent email
+        contacts_df = contacts_df.drop(row_index)
+
+        # Save updated CSV immediately
+        contacts_df.to_csv(
+            LEADS_CSV,
+            index=False
+        )
+
+        emails_sent_today += 1
+
+        print(f"Emails sent today: {emails_sent_today}")
+
+        # Random wait time
+        wait_time = random.randint(
+            MIN_WAIT_TIME,
+            MAX_WAIT_TIME
+        )
+
+        print(f"Waiting {wait_time} seconds before next email...")
+
+        time.sleep(wait_time)
+
+    except smtplib.SMTPAuthenticationError:
+
+        print("\nGmail login failed.")
+        print("Please verify your app password.")
+
+    except smtplib.SMTPRecipientsRefused:
+
+        print(f"Recipient rejected the email -> {recipient_email}")
+
+    except smtplib.SMTPServerDisconnected:
+
+        print("SMTP connection lost.")
+        print("Will reconnect automatically on next iteration.")
+
+    except KeyboardInterrupt:
+
+        print("\nScript stopped manually.")
+        break
+
+    except Exception as error:
+
+        print(f"Failed to send email -> {recipient_email}")
+        print("Reason:", error)
+
+    finally:
+
+        if smtp_server:
+            try:
+                smtp_server.quit()
+            except:
+                pass
+
+
+print("\nEmail automation finished.")
