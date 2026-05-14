@@ -1,3 +1,5 @@
+<img width="1336" height="822" alt="Screenshot 2026-05-13 230446" src="https://github.com/user-attachments/assets/754b7386-37a7-4124-8167-0ec6d7ea3775" />
+<img width="1411" height="757" alt="Screenshot 2026-05-13 230354" src="https://github.com/user-attachments/assets/2d0f00d7-5649-4821-bd38-e678af34691e" />
 AUTOMATION-TOOL
 A lightweight automation tool that extracts recruiter emails and LinkedIn links from raw hiring data, helping streamline job outreach and networking workflows.
 A simple Python-based utility that scans Excel files to automatically extract recruiter emails and LinkedIn profile links for faster job outreach and networking.
